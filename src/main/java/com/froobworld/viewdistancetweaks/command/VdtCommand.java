@@ -21,18 +21,20 @@ public class VdtCommand implements CommandExecutor {
             if (args.length == 0) {
                 return new ArrayList<>();
             }
-            return StringUtil.copyPartialMatches(args[0], Arrays.asList("reload", "status", "rl", "stats"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], Arrays.asList("reload", "status", "manual", "manualnotick", "rl", "stats", "man", "mant"), new ArrayList<>());
         }
     };
 
     private ViewDistanceTweaks viewDistanceTweaks;
     private ReloadCommand reloadCommand;
     private StatusCommand statusCommand;
+    private ManualCommand manualCommand;
 
     public VdtCommand(ViewDistanceTweaks viewDistanceTweaks) {
         this.viewDistanceTweaks = viewDistanceTweaks;
         reloadCommand = new ReloadCommand(viewDistanceTweaks);
         statusCommand = new StatusCommand(viewDistanceTweaks);
+        manualCommand = new ManualCommand(viewDistanceTweaks);
     }
 
 
@@ -47,12 +49,18 @@ public class VdtCommand implements CommandExecutor {
             if (args[0].equalsIgnoreCase("status") || args[0].equalsIgnoreCase("stats")) {
                 return statusCommand.onCommand(sender, command, cl, args);
             }
+			if ((args[0].equalsIgnoreCase("manual") || args[0].equalsIgnoreCase("manualnotick")
+					|| args[0].equalsIgnoreCase("man") || args[0].equalsIgnoreCase("mant")) && args.length >= 2) {
+				return manualCommand.onCommand(sender, command, cl, args);
+			}
         }
 
         sender.sendMessage(ChatColor.YELLOW + "View Distance Tweaks v" + viewDistanceTweaks.getDescription().getVersion());
         sender.sendMessage("");
         sender.sendMessage("/" + cl + " reload");
         sender.sendMessage("/" + cl + " status");
+        sender.sendMessage("/" + cl + " manual <distance> [world]");
+        sender.sendMessage("/" + cl + " manualnotick <distance> [world]");
         return true;
     }
 
